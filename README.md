@@ -1,14 +1,7 @@
-# Real-World Push-T 
+# Real-World 
 
-[[Github Project]](example.com)
-[[Data]](example.com)
-[[Videos]](example.com)
 
-The code and this readme-file are modified from from [Diffusion policy](https://github.com/real-stanford/diffusion_policy).
-Our major contributions can be summarized (but is not limited to) as sensor intergration, actuator intergration, push-T scripting, and control configs.
-
-README v0: [Niilo Emil Isosomppi](example.com) 07.02.2024\
-README v1:
+The code and this readme-file are modified from from ... wich is again adapted from [Diffusion policy](https://github.com/real-stanford/diffusion_policy). ...
 
 
 <img src="media/setup_image.png" alt="setup_image.png" width="100%"/>
