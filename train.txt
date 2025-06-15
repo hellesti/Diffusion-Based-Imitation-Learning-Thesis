@@ -1,0 +1,46 @@
+TRAIN
+
+tmux
+time python train.py --config-name=train_diffusion_unet_real_image_workspace task.dataset_path=data/demo_pusht_real_emil_30_5Hz
+time python train.py --config-name=train_diffusion_unet_real_image_workspace task.dataset_path=data/demo_pusht_real_emil_30_cam_aligned
+
+
+
+
+
+
+
+EVAL
+
+EVAL METRICS
+python /home/niiloemil/Documents/GitHub/diffusion_policy_emil/diffusion_policy/scripts/real_pusht_metrics.py --reference data/demo_pusht_real_emil/perfect_eval.png --input data/demo_pusht_real_emil
+
+time python train.py  --config-name train_diffusion_unet_real_image_workspace training.seed=42 task=real_pusht_image task.dataset_path=data/demo_pusht10;
+time python train.py  --config-name train_diffusion_unet_real_image_workspace training.seed=42 task=real_blocklift_image task.dataset_path=data/demo_blocklift;
+time python train.py  --config-name train_diffusion_unet_real_image_workspace training.seed=42 task=real_pusht_image_ft task.dataset_path=data/demo_pusht10;
+time python train.py  --config-name train_diffusion_unet_real_image_workspace training.seed=42 task=real_blocklift_image_ft task.dataset_path=data/demo_blocklift;
+
+# python eval_real_robot_from_config.py --config pusht10.yaml -i 2024.05.15/15.25.03_train_diffusion_unet_image_real_pusht_image/checkpoints/latest
+# python eval_real_robot_from_config.py --config suctioncup_3dof.yaml -i 2024.05.16/06.17.07_train_diffusion_unet_image_real_blocklift_image/checkpoints/latest
+# python eval_real_robot_from_config.py --config pusht10.yaml -i 2024.05.21/13.36.25_train_diffusion_unet_image_real_pusht_image_ft/checkpoints/latest
+# python eval_real_robot_from_config.py --config suctioncup_3dof.yaml -i 2024.05.22/04.28.50_train_diffusion_unet_image_real_blocklift_image_ft/checkpoints/latest
+
+time python train.py  --config-name train_diffusion_unet_real_image_workspace training.seed=42 task=real_rectangle_peg_vertical task.dataset_path=data/demo_rectangle_peg_vertical;
+time python train.py  --config-name train_diffusion_unet_real_image_workspace training.seed=42 task=real_cylinder_peg_regrasp task.dataset_path=data/demo_cylinder_peg_regrasp;
+time python train.py  --config-name train_diffusion_unet_real_image_workspace training.seed=42 task=real_rectangle_peg_vertical_gpo task.dataset_path=data/demo_rectangle_peg_vertical;
+time python train.py  --config-name train_diffusion_unet_real_image_workspace training.seed=42 task=real_cylinder_peg_regrasp_gpo task.dataset_path=data/demo_cylinder_peg_regrasp;
+
+# ### python eval_real_robot_from_config.py --config gripper_4dof.yaml -i 2024.05.24/15.36.34_train_diffusion_unet_image_real_rectangle_peg_vertical/checkpoints/latest
+# python eval_real_robot_from_config.py --config gripper_6dof.yaml -i 2024.05.25/00.47.43_train_diffusion_unet_image_real_cylinder_peg_regrasp/checkpoints/latest
+# ### python eval_real_robot_from_config.py --config gripper_4dof.yaml -i 2024.05.25/15.40.42_train_diffusion_unet_image_real_rectangle_peg_vertical_gpo/checkpoints/latest
+# python eval_real_robot_from_config.py --config gripper_6dof.yaml -i 2024.05.26/00.52.32_train_diffusion_unet_image_real_cylinder_peg_regrasp_gpo/checkpoints/latest
+
+#THESE NEED OBS CHANGED TO OTHER MEANINGFUL VALUE. 4DOF GET_OBS DOES NOT CONTAIN COMPLETE INFORMATION 
+time python train.py  --config-name train_diffusion_unet_real_image_workspace training.seed=42 task=real_rectangle_peg_vertical task.dataset_path=data/demo_rectangle_peg_vertical; 
+time python train.py  --config-name train_diffusion_unet_real_image_workspace training.seed=42 task=real_rectangle_peg_vertical_gpo task.dataset_path=data/demo_rectangle_peg_vertical;
+
+# python eval_real_robot_from_config.py --config gripper_4dof.yaml -i 2024.05.27/16.04.00_train_diffusion_unet_image_real_rectangle_peg_vertical/checkpoints/latest
+# python eval_real_robot_from_config.py --config gripper_4dof.yaml -i 2024.05.28/01.16.38_train_diffusion_unet_image_real_rectangle_peg_vertical_gpo/checkpoints/latest
+
+
+# python eval_real_robot_from_config.py --config gripper_3dof.yaml -i 2025.03.21/15.26.11_train_diffusion_unet_image_pendulum_image/checkpoints/latest.ckpt

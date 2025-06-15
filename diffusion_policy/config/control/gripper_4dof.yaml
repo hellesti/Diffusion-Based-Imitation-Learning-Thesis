@@ -1,0 +1,79 @@
+#config file for arm control. Always use the same config for demo and for eval. Maybe we even store the config name in traing datasets and trained models so that this is done automatically. 
+#You can, however change eval_launch_options after training
+
+#Use null instead of None, as None becomes the string "None"
+
+name: gripper_4dof #unused #TODO
+
+demo_launch_options: 
+  output: duck_lift
+  robot_ip: 192.168.1.10
+  tool_address: 192.168.1.12
+  ft_sensor_ip: 192.168.1.13
+  vis_camera_idx: 0
+  tool_init_pos: False
+  frequency: 10
+  command_latency: 0.01
+
+eval_launch_options:
+  input: 
+  output: eval
+  match_dataset: null
+  match_episode: null
+  steps_per_inference: 8
+  max_duration: 60
+  frequency: 10
+  command_latency: 0.01
+  vis_camera_idx: 0
+
+  robot_ip: ${demo_launch_options.robot_ip}
+  tool_address: ${demo_launch_options.tool_address}
+  ft_sensor_ip: ${demo_launch_options.ft_sensor_ip}
+  tool_init_pos: ${demo_launch_options.tool_init_pos}
+
+eval_termination_condition: #termination condition
+  pos: null
+  dist: null
+  time: null
+
+real_env: gripper #gripper, suctioncup, stick
+
+# sm_keybinds: #debug
+#   button_0: print_ee_pose
+#   button_1: null
+sm_keybinds:
+  button_0: activate_tool
+  button_1: deactivate_tool
+
+## #TODO
+keybinds:
+  q: stop
+  c: start_recording
+  s: stop_recording
+## 
+ft_transform_matrix: [[1.0, 0.0, 0.0, 0.0, 0.0, 0.0],  #gripper
+                      [0.0, 0.7071067811865476, 0.7071067811865475, 0.0, 0.0, 0.0], 
+                      [0.0, -0.7071067811865475, 0.7071067811865476, 0.0, 0.0, 0.0], 
+                      [0.0, 0.16756598320827715, 0.15153298320827713, 1.0, 0.0, 0.0], 
+                      [-0.2256370430227639, 0.0, 0.0, 0.0, 0.7071067811865476, 0.7071067811865475], 
+                      [0.011337043022763914, 0.0, 0.0, 0.0, -0.7071067811865475, 0.7071067811865476]]     
+                      
+# tcp_limits: #Safe wrt. singularities
+#   x: [0.55,0.9]
+#   y: [-0.4,0.2]
+#   z: [0.03,0.26]
+#   alpha: [-10, 10]
+#   beta: [-6.38318530718, 0.1]
+
+tcp_limits: # For pegboard env
+  x: [0.55,0.9]
+  y: [-0.4,0.35]
+  z: [0.03,0.14]
+  alpha: [-10, 10] # 
+  beta: [-6.38318530718, 0.1]
+
+use_rot: z
+
+
+
+

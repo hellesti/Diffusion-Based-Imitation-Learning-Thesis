@@ -1,0 +1,142 @@
+defaults:
+  - _self_
+  - task: pendulum_image
+
+name: train_edm_unet_hybrid
+_target_: consistency_policy.teacher.edm_workspace.EDMWorkspace
+
+task_name: ${task.name}
+shape_meta: ${task.shape_meta}
+exp_name: "default"
+crop_shape: [216, 288] # ch, cw 240x320 90%
+
+horizon: 16
+n_obs_steps: 2
+n_action_steps: 8
+n_latency_steps: 0
+dataset_obs_steps: 2
+past_action_visible: false
+keypoint_visible_rate: 1.0
+obs_as_global_cond: true
+
+policy:
+  _target_: consistency_policy.teacher.edm_policy.KarrasUnetHybridImagePolicy
+
+  shape_meta: ${task.shape_meta}
+
+  noise_scheduler:
+    _target_: consistency_policy.diffusion.Karras_Scheduler
+    time_min: 0.02
+    time_max: 80.0
+    rho: 7.0
+    bins: 80
+    solver: heun
+    time_sampler: log_normal
+    scaling: boundary
+    use_c_in: true
+    data_std: .5
+    clamp: true
+    name: heun80
+
+  horizon: ${horizon}
+  n_action_steps: ${eval:'${n_action_steps}+${n_latency_steps}'}
+  n_obs_steps: ${n_obs_steps}
+  inference_mode: none # this will be populated automatically from training.inference_mode, do not set it here
+  cond_predict_scale: true
+  crop_shape: ${crop_shape}
+  diffusion_step_embed_dim: 128
+  down_dims: [512, 1024, 2048]
+  eval_fixed_crop: true
+  
+  kernel_size: 5
+  
+  n_groups: 8
+  delta: -1
+
+  obs_as_global_cond: ${obs_as_global_cond}
+  obs_encoder_group_norm: true
+
+ema:
+  _target_: diffusion_policy.model.diffusion.ema_model.EMAModel
+  inv_gamma: 1.0
+  max_value: 0.9999
+  min_value: 0.0
+  power: 0.75
+  update_after_step: 0
+
+dataloader:
+  batch_size: 64
+  num_workers: 16
+  persistent_workers: True
+  pin_memory: True
+  shuffle: True
+
+val_dataloader:
+  batch_size: 64
+  num_workers: 16
+  persistent_workers: True
+  pin_memory: True
+  shuffle: false
+
+optimizer:
+  _target_: torch.optim.AdamW
+  betas:
+  - 0.95
+  - 0.999
+  eps: 1.0e-08
+  lr: 0.0001
+  weight_decay: 1.0e-06
+
+training:
+  inference_mode: false # Setting this to true disables the teacher, warm start, and training loop
+  online_rollouts: true # Setting this to false disables the env_runner
+  checkpoint_every: 50
+  debug: false
+  device: "cuda:0"
+  gradient_accumulate_every: 1
+  lr_scheduler: cosine
+  lr_warmup_steps: 500
+  max_train_steps: null
+  max_val_steps: null
+  num_epochs: 60
+  resume: false
+  resume_path: ???
+  rollout_every: 50
+  sample_every: 5
+  seed: 42
+  tqdm_interval_sec: 1.0
+  use_ema: true
+  val_every: 1
+  val_sample_every: 5
+  #output_dir: outputs/edm/${task.name}
+
+logging:
+  project: diffusion_policy_debug
+  resume: True
+  mode: online
+  name: ${now:%Y.%m.%d-%H.%M.%S}_${name}_${task_name}
+  tags: ["${name}", "${task_name}", "${exp_name}"]
+  id: null
+  group: null
+
+checkpoint:
+  save_last_ckpt: true
+  save_last_snapshot: false
+  topk:
+    format_str: 'epoch={epoch:04d}-train_loss={train_loss:.3f}.ckpt'
+    k: 1
+    mode: min
+    monitor_key: train_loss
+
+multi_run:
+  run_dir: data/outputs/${now:%Y.%m.%d}/${now:%H.%M.%S}_${name}_${task_name}
+  wandb_name_base: ${now:%Y.%m.%d-%H.%M.%S}_${name}_${task_name}
+
+hydra:
+  job:
+    override_dirname: ${name}
+  run:
+    dir: data/outputs/${now:%Y.%m.%d}/${now:%H.%M.%S}_${name}_${task_name}
+  sweep:
+    dir: data/outputs/${now:%Y.%m.%d}/${now:%H.%M.%S}_${name}_${task_name}
+    subdir: ${hydra.job.num}

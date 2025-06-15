@@ -1,0 +1,158 @@
+defaults:
+  - _self_
+  - task: pendulum_image
+
+name: train_ctm_unet_hybrid_delta
+_target_: consistency_policy.student.ctm_workspace.CTMWorkspace
+
+task_name: ${task.name}
+shape_meta: ${task.shape_meta}
+exp_name: "default"
+crop_shape: [216, 288] # ch, cw 240x320 90%
+
+horizon: 16
+n_obs_steps: 2
+
+n_action_steps: 8
+n_latency_steps: 0
+dataset_obs_steps: ${n_obs_steps}
+past_action_visible: False
+obs_as_global_cond: True
+keypoint_visible_rate: 1.0
+
+policy:
+  _target_: consistency_policy.student.ctm_policy.CTMPPUnetHybridImagePolicy
+
+  shape_meta: ${shape_meta}
+
+  noise_scheduler:
+    _target_: consistency_policy.diffusion.CTM_Scheduler
+    time_min: 0.02
+    time_max: 80.0
+    rho: 7.0
+    bins: 80
+    solver: heun
+    scaling: boundary
+    use_c_in: true
+    data_std: .5
+    time_sampler: ctm
+    clamp: true
+    ode_steps_max: 1
+  
+  horizon: ${horizon}
+  n_action_steps: ${eval:'${n_action_steps}+${n_latency_steps}'}
+  n_obs_steps: ${n_obs_steps}
+  chaining_times: ['D', 27, 54]
+  obs_as_global_cond: ${obs_as_global_cond}
+  crop_shape: ${crop_shape}
+  diffusion_step_embed_dim: 128
+  down_dims: [512, 1024, 2048]
+  kernel_size: 5
+  n_groups: 8
+  cond_predict_scale: True
+  obs_encoder_group_norm: True
+  eval_fixed_crop: True
+
+  inference_mode: none # this will be populated automatically from training.inference_mode, do not set it here
+  dropout_rate: 0.2
+  #extra args
+  initial_ema_decay: 0.0
+  delta: -1 #0.0068305197 # sqrt(160) * .00054
+  special_skip: true
+  #teacher
+  teacher_path: "data/outputs/2025.05.28/15.47.12_train_edm_unet_hybrid_pendulum_image/checkpoints/epoch=0050-train_loss=0.063.ckpt"
+  #KDE
+  use_kde: False
+  kde_samples: 0
+  #warm start
+  edm: "data/outputs/2025.05.28/15.47.12_train_edm_unet_hybrid_pendulum_image/checkpoints/epoch=0050-train_loss=0.063.ckpt" 
+  losses: [["ctm", "dsm"], [1, 1]]
+  ctm_sampler: ctm
+  dsm_weights: "karras"
+
+ema:
+  _target_: diffusion_policy.model.diffusion.ema_model.EMAModel
+  inv_gamma: 1.0
+  max_value: 0.9999
+  min_value: 0.0
+  power: 0.75
+  update_after_step: 0
+
+dataloader:
+  batch_size: 64
+  num_workers: 16
+  persistent_workers: True
+  pin_memory: true
+  shuffle: true
+
+val_dataloader:
+  batch_size: 64
+  num_workers: 16
+  persistent_workers: True
+  pin_memory: true
+  shuffle: false
+
+optimizer:
+  _target_: torch.optim.AdamW
+  betas:
+  - 0.95
+  - 0.999
+  eps: 1.0e-08
+  lr: 0.0001
+  weight_decay: 1.0e-06
+
+training:
+  inference_mode: false # Setting this to true disables the teacher, warm start, and training loop
+  online_rollouts: true # Setting this to false disables the env_runner
+  debug: false
+  checkpoint_every: 50
+  device: "cuda:0"
+  gradient_accumulate_every: 1
+  lr_scheduler: cosine
+  lr_warmup_steps: 500
+  max_train_steps: null
+  max_val_steps: null
+  num_epochs: 601
+  resume: false
+  resume_path: ???
+  rollout_every: 50
+  sample_every: 5
+  seed: 42
+  tqdm_interval_sec: 1.0
+  use_ema: true
+  val_every: 1
+  val_sample_every: 5
+  #output_dir: outputs/cd/square/
+  val_chaining_steps: 1
+  p_epochs: 400
+
+logging:
+  project: diffusion_policy_debug
+  resume: True
+  mode: online
+  name: ${now:%Y.%m.%d-%H.%M.%S}_${name}_${task_name}
+  tags: ["${name}", "${task_name}", "${exp_name}"]
+  id: null
+  group: null
+
+checkpoint:
+  save_last_ckpt: true
+  save_last_snapshot: false
+  topk:
+    format_str: 'epoch={epoch:04d}-train_loss={train_loss:.3f}.ckpt'
+    k: 1
+    mode: min
+    monitor_key: train_loss
+
+multi_run:
+  run_dir: data/outputs/${now:%Y.%m.%d}/${now:%H.%M.%S}_${name}_${task_name}
+  wandb_name_base: ${now:%Y.%m.%d-%H.%M.%S}_${name}_${task_name}
+
+hydra:
+  job:
+    override_dirname: ${name}
+  run:
+    dir: data/outputs/${now:%Y.%m.%d}/${now:%H.%M.%S}_${name}_${task_name}
+  sweep:
+    dir: data/outputs/${now:%Y.%m.%d}/${now:%H.%M.%S}_${name}_${task_name}
+    subdir: ${hydra.job.num}

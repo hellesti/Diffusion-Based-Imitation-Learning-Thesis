@@ -1,0 +1,66 @@
+#config file for arm control. Always use the same config for demo and for eval. Maybe we even store the config name in traing datasets and trained models so that this is done automatically. 
+#You can, however change eval_launch_options after training
+
+name: demo_pusht30 #unused #TODO
+
+demo_launch_options: 
+  output: demo_pusht30
+  robot_ip: 192.168.1.10
+  tool_address: 192.168.1.12
+  ft_sensor_ip: 192.168.1.13
+  vis_camera_idx: 0
+  tool_init_pos: null
+  frequency: 30
+  command_latency: 0.01
+
+eval_launch_options:
+  input: 2024.04.29/11.01.49_train_diffusion_unet_image_real_image/checkpoints/epoch=0250-train_loss=0.004
+  output: eval
+  match_dataset: null
+  match_episode: null
+  steps_per_inference: 6
+  max_duration: 60
+  frequency: 30
+  command_latency: 0.01
+  vis_camera_idx: 0
+
+  robot_ip: ${demo_launch_options.robot_ip}
+  tool_address: ${demo_launch_options.tool_address}
+  ft_sensor_ip: ${demo_launch_options.ft_sensor_ip}
+  tool_init_pos: ${demo_launch_options.tool_init_pos}
+
+eval_termination_condition: #termination condition
+  pos: [0.28094834089279863, -0.33619415760041127, 0.24278193712234428]
+  dist: 0.03
+  time: 1.0
+
+real_env: pusht #gripper, suctioncup, stick, pusht # pusht uses gripper for reset
+
+sm_keybinds:
+  button_0: print_ee_pose
+  button_1: print_ee_joints
+
+## #TODO 
+keybinds:
+  q: stop
+  c: start_recording
+  s: stop_recording
+  t: do_t_reset
+
+## 
+ft_transform_matrix:  [[1.0, 0.0, 0.0, 0.0, 0.0, 0.0], #stick
+                      [0.0, 0.7071067811865476, -0.7071067811865475, 0.0, 0.0, 0.0], 
+                      [0.0, 0.7071067811865475, 0.7071067811865476, 0.0, 0.0, 0.0], 
+                      [0.0, 0.1744956296639053, -0.15846262966390529, 1.0, 0.0, 0.0], 
+                      [-0.23543704302276391, 0.0, 0.0, 0.0, 0.7071067811865476, -0.7071067811865475], 
+                      [-0.011337043022763907, 0.0, 0.0, 0.0, 0.7071067811865475, 0.7071067811865476]]
+
+tcp_limits: 
+  x: [0.255,0.835]
+  y: [-0.361,0.399]
+  z: [0.2427819371223478,2]
+  alpha: [-100,100]
+  beta: [-100, 100]
+
+use_rot: null #Valid: null, z, xyz  ---  indep. x,y rot not implemented
+

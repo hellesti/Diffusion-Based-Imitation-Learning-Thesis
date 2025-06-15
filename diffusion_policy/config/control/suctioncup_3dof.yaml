@@ -1,0 +1,67 @@
+
+#config file for arm control. Always use the same config for demo and for eval. Maybe we even store the config name in traing datasets and trained models so that this is done automatically. 
+#You can, however change eval_launch_options after training
+
+demo_launch_options: 
+  output: demo_blocklift
+  robot_ip: 192.168.1.10
+  tool_address: "auto"
+  ft_sensor_ip: 192.168.1.13
+  vis_camera_idx: 0
+  tool_init_pos: False
+  frequency: 10
+  command_latency: 0.01
+
+eval_launch_options:
+  input: 2024.05.16/06.17.07_train_diffusion_unet_image_real_blocklift_image/checkpoints/latest
+  output: eval
+  match_dataset: null
+  match_episode: null
+  steps_per_inference: 6
+  max_duration: 30
+  frequency: 10
+  command_latency: 0.01
+  vis_camera_idx: 0
+
+  robot_ip: ${demo_launch_options.robot_ip}
+  tool_address: ${demo_launch_options.tool_address}
+  ft_sensor_ip: ${demo_launch_options.ft_sensor_ip}
+  tool_init_pos: ${demo_launch_options.tool_init_pos}
+
+eval_termination_condition: #termination condition
+  pos: null
+  dist: null
+  time: null
+
+real_env: suctioncup #gripper, suctioncup, stick, pusht # pusht uses gripper for reset
+
+
+# sm_keybinds:
+#   button_0: print_ee_pose
+#   button_1: print_ee_joints
+
+sm_keybinds:
+  button_0: activate_tool
+  button_1: deactivate_tool
+
+keybinds:
+  q: stop
+  c: start_recording
+  s: stop_recording
+
+## 
+ft_transform_matrix: [[1.0, 0.0, 0.0, 0.0, 0.0, 0.0], 
+                      [0.0, 0.7071067811865476, -0.7071067811865475, 0.0, 0.0, 0.0], 
+                      [0.0, 0.7071067811865475, 0.7071067811865476, 0.0, 0.0, 0.0], 
+                      [0.0, 0.1744956296639053, -0.15846262966390529, 1.0, 0.0, 0.0], 
+                      [-0.23543704302276391, 0.0, 0.0, 0.0, 0.7071067811865476, -0.7071067811865475], 
+                      [-0.011337043022763907, 0.0, 0.0, 0.0, 0.7071067811865475, 0.7071067811865476]]      
+
+tcp_limits: 
+  x: [0.45,0.9] #.55
+  y: [-0.4,0.2]
+  z: [0.035,0.26]
+  alpha: [-10, 10]
+  beta: [-10, 10]
+
+use_rot: null #Valid: null, z, xyz  ---  indep. x,y rot not implemented
