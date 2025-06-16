@@ -4,7 +4,7 @@
 The code and this readme-file are modified from from the codebase developed by Isosomppi [Diffusion_Policy_Thesis_mtplab](https://github.com/niiloemil/diffusion_policy_thesis_mtplab) itself adapted from [Diffusion policy](https://github.com/real-stanford/diffusion_policy). In this thesis, Bidirectional Decoding (BID) has been integrated into the codebase using modules from the official BID repository [bid_diffusion](https://github.com/YuejiangLIU/bid_diffusion). Consistency Policy (CP) has been implemented from the official CP repository [consistency-policy](https://github.com/Aaditya-Prasad/Consistency-Policy) To integrate CP into the BID pipeline, the system was modified to allow CP-generated action sequences to replace those from DP.
 
 
-<img src="media/setup_image.png" alt="setup_image.png" width="100%"/>
+<img src="Media/IMG_8415.HEIC" alt="IMG_8415.HEIC" width="100%"/>
 
 ## 💾 Installation
 <details>
@@ -20,7 +20,7 @@ TODO
 
 To reproduce our environment, install the given conda environment on a Linux machine with an Nvidia RTX 3090 GPU. 
 
-The author of this tutorial tried using <span style="color:ff5733"> Conda </span> but was unable to. While <span style="color:ff5733
+The author of [Diffusion_Policy_Thesis_mtplab] tried using <span style="color:ff5733"> Conda </span> but was unable to. While <span style="color:ff5733
 "> Mambaforge </span> is discouraged by its authors as of September 2023, it is what has been tested in the lab. For future users of the setup, it may be worthwhile upgrading to <span style="color:ff5733
 "> Miniforge </span>.
 
@@ -94,8 +94,6 @@ Turn the robot's teach pendant on.
 
 Verify that the robot's network settings panel looks like this, with an IP address `192.168.1.10`
 
-<img src="media/robot_network_settings.png" alt="robot_network_settings.png" width="100%"/>
-
 In the teach pendant, verify that in `program robot` -> `installation`:
 
     MODBUS client IO setup is OFF (contains no elements)
@@ -112,7 +110,6 @@ In the teach pendant, verify that in `program robot` -> `installation`:
 | FT sensor  | 192.168.1.13 |
 
 These should be pingable: 
-<img src="media/ping.png" alt="ping.png" width="100%"/>
 
 ## 🦾 Demo, Training and Eval on a Real Robot
 Initialize and start the robot from the teach pendant, making sure that the payload is set to 2.18kg (emergency stop button within reach at all time), your cameras plugged in to your workstation (tested with `test_multi_realsense.py`) and your SpaceMouse connected with the `spacenavd` daemon running (verify with `systemctl status spacenavd`).
