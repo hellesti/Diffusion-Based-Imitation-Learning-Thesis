@@ -14,16 +14,6 @@ The demonstration data and checkpoints can be made avaleble upon request.
 
 
 ## 💾 Installation
-<details>
-<summary>Full installation code.</summary>
-Run the following:
-<a>
-
-```console
-TODO
-```
-</a>
-</details>
 
 To reproduce our environment, install the given conda environment on a Linux machine with an Nvidia RTX 3090 GPU. 
 
@@ -105,7 +95,7 @@ Set payload on the teach pendant to 2.18kg. Check that no extra IO protocols are
 - PROFINET: OFF
 
 <span style="color:ff5733"> Warning: </span>\
-Joint limits for the robot are <span style="color:ff5733"> not </span> configured in the teach pendant, but in Python. Futhermore, these currently only exist when using teleop or when running model inference. Exercise caution if programming new hard-coded movements. Especially, beware of generating linear movements using moveL around the wrist singularity (when joint 5 is a multiple of ±180°). Doing this will likely break the end-effector. Replacement parts can be printed as documented in section [🛠️Replacement parts](###🛠️-replacement-parts).
+Joint limits for the robot are <span style="color:ff5733"> not </span> configured in the teach pendant, but in Python. Futhermore, these currently only exist when using teleop or when running model inference. Exercise caution if programming new hard-coded movements. Especially, beware of generating linear movements using moveL around the wrist singularity (when joint 5 is a multiple of ±180°). Doing this will likely break the end-effector.
 
 
 ## 🦾 Demo, Training and Eval on a Real Robot
@@ -133,7 +123,7 @@ python demo_real_robot_from_config.py --config gripper_3dof.yaml
 
 Press "C" to start recording. Use SpaceMouse to move the robot. Press "S" to stop recording. If you are unhappy with an episode, finish the episode. Then press backspace and confirm with "y" in the terminal to remove the previous episode. Press "Q" to correctly exit the program. Press "D" to activate the disturbance for Case 2. For These keybinds (with the exception of backspace) can be modified in the config file, which is in diffusion_policy/config/control.
 
-This should result in a demonstration dataset in `data/demo_pendulum` with in the same structure as the provided push-T dataset.
+This should result in a demonstration dataset in `data/demo_pendulum` with in the same structure as the pendulum dataset.
 
 To train a Diffusion Policy, launch training with config:
 ```console
@@ -142,7 +132,7 @@ time python train.py --config gripper_3dof.yaml train_diffusion_unet_real_image_
 
 If you are working with another task than pendulum, change task=pendulum_image to another config in `diffusion_policy/config/task`. Also change the dataset path to the correct dataset path. To change the random seed, change training.seed 
 
-Edit [`diffusion_policy/config/task/real_pusht_image.yaml`](./diffusion_policy/config/task/real_pusht_image.yaml) if your camera setup is different. If you are using a different end-effector tool, choose the corresponding control config when making demonstrations. Use the same config during inference. Remember to specify the correct task when training. Find different task configs in diffusion_policy/config/task
+Edit [`diffusion_policy/config/task/pendulum_image.yaml`](./diffusion_policy/config/task/pendulum_image.yaml) if your camera setup is different. If you are using a different end-effector tool, choose the corresponding control config when making demonstrations. Use the same config during inference. Remember to specify the correct task when training. Find different task configs in diffusion_policy/config/task
 
 Assuming the training has finished and you have a checkpoint at `data/outputs/blah/checkpoints/latest.ckpt`, launch the evaluation script with:
 For Case 1, DP then BID (BID-CP is run just like BID, but with different checkpoints):
