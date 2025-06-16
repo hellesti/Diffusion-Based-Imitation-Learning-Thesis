@@ -12,7 +12,7 @@ Over 1,200 physical evaluations were conducted across the two test cases, with d
 
 The demonstration data and checkpoints can be made avaleble upon request.
 
-<img src="Media/setup_w_cups.png" alt="setup_w_cups.png" width="100%"/>
+<img src="Media/setup_w_cups.png" alt="setup_w_cups.png" width="60%"/>
 
 
 ## 💾 Installation
