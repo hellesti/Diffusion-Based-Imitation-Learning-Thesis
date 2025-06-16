@@ -1,7 +1,7 @@
 # Real-World 
 
 
-The code and this readme-file are modified from from ... wich is again adapted from [Diffusion policy](https://github.com/real-stanford/diffusion_policy). ...
+The code and this readme-file are modified from from the codebase developed by Isosomppi [Diffusion_Policy_Thesis_mtplab](https://github.com/niiloemil/diffusion_policy_thesis_mtplab) itself adapted from [Diffusion policy](https://github.com/real-stanford/diffusion_policy). In this thesis, Bidirectional Decoding (BID) has been integrated into the codebase using modules from the official BID repository [bid_diffusion](https://github.com/YuejiangLIU/bid_diffusion). Consistency Policy (CP) has been implemented from the official CP repository [consistency-policy](https://github.com/Aaditya-Prasad/Consistency-Policy) To integrate CP into the BID pipeline, the system was modified to allow CP-generated action sequences to replace those from DP.
 
 
 <img src="media/setup_image.png" alt="setup_image.png" width="100%"/>
